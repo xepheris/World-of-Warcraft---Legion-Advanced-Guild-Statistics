@@ -19,7 +19,7 @@ function import($char) {
 	}
 	
 	// CHECK FOR LAST UPDATE
-	$old = mysqli_fetch_array(mysqli_query($stream, "SELECT `lupd` FROM `". $_SESSION['t']. "_" .$char. "` ORDER BY `id` DESC LIMIT 1"));
+	$old = mysqli_fetch_array(mysqli_query($stream, "SELECT `lupd` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "' ORDER BY `id` DESC LIMIT 1"));
 	$timediff = time('now')-$old['lupd'];
 		
 	if($timediff >= '300') {
