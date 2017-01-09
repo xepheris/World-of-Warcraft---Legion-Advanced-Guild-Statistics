@@ -36,7 +36,11 @@ if($_POST['r'] == 'EU' || $_POST['r'] == 'US') {
 				mysqli_query($stream, "INSERT INTO `guilds` (`g`, `r`, `s`, `l`, `p`) VALUES ('" .$_POST['gn']. "', '" .$_POST['r']. "', '" .$_POST['s']. "', '" .time('now'). "', '" .$pw. "');");
 				echo '<h2 id="cent" style="color: green;">Guild inserted, you may login now!</h2>';
 			}
+			else {
+				echo '<h2 id="cent" style="color: red;">According to the Armory, the guild you wanted to enter does not exist.<br />Please keep in mind that the guild name is <u>case-sensitive</u>!';
+			}
 		}
+		
 	}
 }
 	

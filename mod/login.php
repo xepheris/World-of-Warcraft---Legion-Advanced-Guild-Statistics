@@ -2,14 +2,22 @@
 
 include('dbcon.php');
 
-echo '<h1 id="cent"><a href="http://guild.artifactpower.info/"><u>A</u>dvanced <u>G</u>uild <u>S</u>tatistics</a></h1>
+echo '<h1 id="cent"><a href="http://guild.artifactpower.info/"><u>A</u>dvanced <u>G</u>uild <u>S</u>tatistics</a></h1>';
+$count = mysqli_num_rows(mysqli_query($stream, "SELECT `id` FROM `guilds`"));
+echo '<p style="color: orange; text-align: center;">' .$count. ' guilds registered!</p>
 <form id="cent" action="" method="POST">
 <select name="g" id="cent">
 <option selected disabled>select your guild</option>';
 
-$guilds = mysqli_query($stream, "SELECT `id`, `g`, `r`, `s` FROM `guilds` ORDER BY `g` ASC");
-while($guild = mysqli_fetch_array($guilds)) {
-	echo '<option value="' .$guild['id']. '">' .$guild['g']. ' (' .$guild['r']. '-' .$guild['s']. ')</option>';
+$alph = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+
+foreach($alph as $letter) {
+	echo '<optgroup label="' .$letter. '">';
+		$guilds = mysqli_query($stream, "SELECT `id`, `g`, `r`, `s` FROM `guilds` WHERE LEFT(`g`, 1) = '" .$letter. "' ORDER BY `g` ASC");
+		while($guild = mysqli_fetch_array($guilds)) {			
+			echo '<option value="' .$guild['id']. '">' .$guild['g']. ' (' .$guild['r']. '-' .$guild['s']. ')</option>';
+		}
+	echo '</optgroup>';
 }
 echo '</select><br />
 <input type="password" name="cd" value="" placeholder="password"/>

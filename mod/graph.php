@@ -159,7 +159,7 @@ if(!isset($_POST['c'])) {
 			}
 			
 			
-			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `alvl` FROM `gg` WHERE `id` != '999999'");
+			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `alvl` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '800'");
 			while($chardata = mysqli_fetch_array($graphdata)) {
 				echo "[" .$chardata['ilvl']. ", " .$chardata['alvl']. "], ";
 			}
@@ -225,13 +225,13 @@ if(!isset($_POST['c'])) {
 			['Mythics done', 'Itemlevel equipped, Mythics done'],
 			<?php
 			
-			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `sum` FROM `gg` WHERE `id` != '999999'");
+			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `sum` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '800'");
 			while($chardata = mysqli_fetch_array($graphdata)) {
 				echo "[" .$chardata['ilvl']. ", " .$chardata['sum']. "], ";
 			}
-			$lowest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`ilvl`) AS `min` FROM `gg` WHERE `id` != '999999'"));
+			$lowest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`ilvl`) AS `min` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '800'"));
 			$highest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`ilvl`) AS `max` FROM `gg` WHERE `id` != '999999'"));
-			$lowest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`sum`) AS `min` FROM `gg` WHERE `id` != '999999'"));
+			$lowest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`sum`) AS `min` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '800'"));
 			$highest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`sum`) AS `max` FROM `gg` WHERE `id` != '999999'"));
 			
 			?>

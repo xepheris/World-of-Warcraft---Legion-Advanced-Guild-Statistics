@@ -141,7 +141,7 @@ if(!isset($_GET['i'])) {
 		elseif(substr($_GET['s'], '-1') == '1') {
 			$num = '2';
 		}		
-		$columnarray = array('' => '', 'Class' => 'cl' .$num. '', 'Role' => 'ro' .$num. '', 'Total AP' => 'to' .$num. '', 'Artifact Level (AK)' => 'al' .$num. '', 'Equipped' => 'eq' .$num. '', 'Bags' => 'ba' .$num. '', 'Weapon' => 'wa' .$num. '', 'Head' => 'he' .$num. '', 'Neck' => 'ne' .$num. '', 'Shoulder' => 'sh' .$num. '', 'Back' => 'ba' .$num. '', 'Chest' => 'ch' .$num. '', 'Wrist' => 'wr' .$num. '', 'Hands' => 'ha' .$num. '', 'Waist' => 'wi' .$num. '', 'Legs' => 'le' .$num. '', 'Feet' => 'fe' .$num. '', 'Ring1' => 'r1' .$num. '', 'Ring2' => 'r2' .$num. '', 'Trinket1' => 't1' .$num. '', 'Trinket2' => 't2' .$num. '', 'Mythics' => 'my' .$num. '', 'EN' => 'en' .$num. '', 'ToV' => 'tov' .$num. '', 'NH' => 'nh' .$num. '', '' => '', '' => '');
+		$columnarray = array('' => '', 'Class' => 'cl' .$num. '', 'Role' => 'ro' .$num. '', 'Total AP' => 'to' .$num. '', 'Artifact Level (AK)' => 'al' .$num. '', 'Equipped' => 'eq' .$num. '', 'Bags' => 'ba' .$num. '', 'Weapon' => 'wa' .$num. '', 'Head' => 'he' .$num. '', 'Neck' => 'ne' .$num. '', 'Shoulder' => 'sh' .$num. '', 'Back' => 'ba' .$num. '', 'Chest' => 'ch' .$num. '', 'Wrist' => 'wr' .$num. '', 'Hands' => 'ha' .$num. '', 'Waist' => 'wi' .$num. '', 'Legs' => 'le' .$num. '', 'Feet' => 'fe' .$num. '', 'Ring1' => 'r1' .$num. '', 'Ring2' => 'r2' .$num. '', 'Trinket1' => 't1' .$num. '', 'Trinket2' => 't2' .$num. '', 'Mythics' => 'my' .$num. '', 'Highest M+' => 'mp' .$num. '', 'EN' => 'en' .$num. '', 'ToV' => 'tov' .$num. '', 'NH' => 'nh' .$num. '', '' => '', '' => '');
 			
 		foreach($columnarray as $column => $sort) {
 			if($column == 'Head' || $column == 'Neck' || $column == 'Shoulder' || $column == 'Back' || $column == 'Chest' || $column == 'Wrist' || $column == 'Hands' || $column == 'Waist' || $column == 'Legs' || $column == 'Feet' || $column == 'Ring1' || $column == 'Ring2' || $column == 'Trinket1' || $column == 'Trinket2') {
@@ -179,6 +179,7 @@ if(!isset($_GET['i'])) {
 				if(substr($_GET['s'], '0', '2') == 't1') { $sortby = '`t1_ilvl`'; }
 				if(substr($_GET['s'], '0', '2') == 't2') { $sortby = '`t2_ilvl`'; }
 				if(substr($_GET['s'], '0', '2') == 'my') { $sortby = '`sum`'; }
+				if(substr($_GET['s'], '0', '2') == 'mp') { $sortby = '`mplus`'; }
 				if(substr($_GET['s'], '0', '2') == 'en') { $sortby = '`en`'; }
 				if(substr($_GET['s'], '0', '3') == 'tov') { $sortby = '`tov`'; }
 				if(substr($_GET['s'], '0', '2') == 'nh') { $sortby = '`nh`'; }
@@ -392,7 +393,14 @@ if(!isset($_GET['i'])) {
 				unset($enchant_img);
 				
 			}
-			echo '<div class="tc"><span title="ARC ' .$data['arc']. ' BRH ' .$data['brh']. ' COS ' .$data['cos']. ' DHT ' .$data['dht']. ' EOA ' .$data['eoa']. ' HOV ' .$data['hov']. ' MOS ' .$data['mos']. ' NEL ' .$data['nel']. ' VOW ' .$data['vow']. ' VH ' .$data['vh']. '">' .$data['sum']. ' ' .$sum_old. '</span></div>';
+			
+			if($data['mplus'] == '15') { $mplus = '<span style="color: green;">15</span>'; }
+			elseif($data['mplus'] == '10') { $mplus = '<span style="color: orange;">10</span>'; }
+			elseif($data['mplus'] == '5') { $mplus = '<span style="color: red;">5</span>'; }
+			elseif($data['mplus'] < '5') { $mplus = '<span style="color: grey;">' .$data['mplus']. '</span>'; }
+			
+			echo '<div class="tc"><span title="ARC ' .$data['arc']. ' BRH ' .$data['brh']. ' COS ' .$data['cos']. ' DHT ' .$data['dht']. ' EOA ' .$data['eoa']. ' HOV ' .$data['hov']. ' MOS ' .$data['mos']. ' NEL ' .$data['nel']. ' VOW ' .$data['vow']. ' VH ' .$data['vh']. '">' .$data['sum']. ' ' .$sum_old. '</span></div>
+			<div class="tc">' .$mplus. '</div>';
 			
 			if($data['en'] == '0') { $color_en = 'style="color: red;"'; } elseif($data['en'] == '7') { $color_en = 'style="color: green;"'; } elseif($data['en'] > '0') { $color_en = 'style="color: orange;"'; }			
 			if($data['tov'] == '0') { $color_tov = 'style="color: red;"'; } elseif($data['tov'] == '3') { $color_tov = 'style="color: green;"'; } elseif($data['tov'] > '0') { $color_tov = 'style="color: orange;"'; }
