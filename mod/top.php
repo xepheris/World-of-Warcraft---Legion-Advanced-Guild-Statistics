@@ -30,6 +30,6 @@ echo '<div id="core"><h1 id="cent"><a href="http://guild.artifactpower.info/"><u
 	<p id="cent">known issues: armory still thinks legendaries are 895 and ToV loot = -5 ilvl & Wowhead cannot properly calculate weapon itemlevel on tooltip.</p>
 	<p id="cent" style="font-size: 20px;"><img src="img/me.png" alt="404" /> = missing enchant | <img src="img/mg.png" alt="404" /> = missing gem<br />click on a column or class/role to sort | hover over Mythics number to see different amounts</p>
 	<hr>
-	<center><a href="?i">Import</a> ' .$updatetext. ' ' .$equip. ' ' .$showhide. ' | <a href="?die">Logout</a></center>
+	<center><a href="?i">Import</a> ' .$updatetext. ' ' .$equip. ' ' .$showhide. ' | <a href="?changepw">Change Password</a> | <a href="?die">Logout</a></center>
 	<hr>';
 ?>

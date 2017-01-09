@@ -31,6 +31,12 @@ if($_GET['u'] == 'all') {
 	}
 }
 
+if(isset($_GET['changepw'])) {
+	require_once('changepw.php');
+	include('dbcon.php');
+	die();
+}
+
 if(isset($_GET['u']) && is_numeric($_GET['u'])) {
 	require_once('func.php');
 	include('dbcon.php');
