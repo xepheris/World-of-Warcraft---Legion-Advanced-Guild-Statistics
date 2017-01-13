@@ -29,13 +29,13 @@ echo '<div id="core"><h1 id="cent"><a href="http://guild.artifactpower.info/"><u
 	– <a href="https://www.warcraftlogs.com/search/?term=' .$_SESSION['g']. '">Warcraftlogs</a>
 	- TEMPORARY LINK: <a href="http://guild.artifactpower.info/img/nh/"><span title="credit goes to Oaken of <The Kremling Krew> of US-Mannoroth">Heroic Nighthold Guide</span></a><br />
 	' .$info. '</p>
-	<p id="cent">known issues: armory still thinks legendaries are 895 and ToV loot = -5 ilvl & Wowhead cannot properly calculate weapon itemlevel on tooltip.
-	<br />Updating only characters that gained AP since last update!</p>
+	<p id="cent">known issues: wowhead cannot properly calculate weapon itemlevel on tooltip
+	<br /><span style="color: orange;">ARMORY LEGENDARIES ARE NOW UP TO DATE - UPDATE YOUR GUILD TO CORRECT COLORIZATION OF ITEMS</span><br />to manually update - logout (character selection is enough; armory _should_ update instantly)</p>
 	<p id="cent" style="font-size: 20px;">
 	<img src="img/me.png" alt="404" /> = missing enchant
 	| <img src="img/mg.png" alt="404" /> = missing gem<br />
 	click on a column or class/role to sort | hover over Mythics number to see different amounts</p>
 	<hr>
-	<center><a href="?i">Import</a> ' .$updatetext. ' ' .$equip. ' ' .$showhide. ' | <a href="?changepw">Change Password</a> | <a href="?die">Logout</a></center>
+	<center><a href="?i">Import</a> ' .$updatetext. ' ' .$equip. ' ' .$showhide. ' | <a href="?sett">Settings</a> | <a href="?die">Logout</a></center>
 	<hr>';
 ?>
