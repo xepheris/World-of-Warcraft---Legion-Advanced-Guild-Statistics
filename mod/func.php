@@ -69,6 +69,11 @@ function import($char) {
 						foreach($data['items']['' .$item. '']['bonusLists'] as $bonus) {
 							if(!isset(${'' .$item. '_bonus'})) {
 								${'' .$item. '_bonus'} = $bonus;
+								
+								// PRYDAZ WORKAROUND - BLIZZARD API DOESN'T RETURN IT HAVING A SOCKET
+								if(${'' .$item. '_id'} == '132444') {
+									${'' .$item. '_bonus'}.= ':1808';
+								}
 							}
 							elseif(isset(${'' .$item. '_bonus'})) {
 								${'' .$item. '_bonus'}.= ':' .$bonus. '';
@@ -499,7 +504,7 @@ function import($char) {
 					if($current_db_entry['id'] != '') {
 						
 						// IS ENTRY THE SAME?
-						if($current_db_entry['llog'] != $llog && $current_db_entry['ap'] != $totalgained) {
+						if($current_db_entry['llog'] != $llog) {
 							
 							mysqli_query($stream, "INSERT INTO `" .$_SESSION['t']. "_archive` SELECT * FROM `" .$_SESSION['t']. "` WHERE `id` = '" .$current_db_entry['id']. "'");
 							mysqli_query($stream, "DELETE FROM `" .$_SESSION['t']. "` WHERE `id` = '" .$current_db_entry['id']. "'");
