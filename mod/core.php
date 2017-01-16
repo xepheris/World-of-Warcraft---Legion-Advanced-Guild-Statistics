@@ -1,4 +1,4 @@
-<script defer src="http://wow.zamimg.com/widgets/power.js"></script>
+ap<script defer src="http://wow.zamimg.com/widgets/power.js"></script>
 <script>
 var wowhead_tooltips = {
 	"hide": {
@@ -137,7 +137,7 @@ if(isset($_GET['sett'])) {
 		<div class="tr" style="text-align: center;">AP <u>lower than</u> <input type="text" maxlength="4" value="' .$ap_thresholds['ap_low']. '" name="ap_low" style="width: 30px;" required /> of your highest members AP will be considered <span style="color: red;">bad</span></div>
 		<div class="tr" style="text-align: center;">AP between these two values will appear <span style="color: orange;">orange</span></div>
 		<div class="tr" style="text-align: center;">AP <u> higher or equal than</u> <input type="text" maxlength="4" value="' .$ap_thresholds['ap_high']. '" name="ap_high" style="width: 30px;" required /> of your highest members AP will be considered <span style="color: green;">good</span></div>
-		<div class="tr" style="text-align: center;"><button type="submit">Change Artifact Power thresolds</button></div>
+		<div class="tr" style="text-align: center;"><button type="submit">Change Artifact Power thresholds</button></div>
 		</div>
 		</form>';
 	}
@@ -185,7 +185,7 @@ if(isset($_POST['gr'])) {
 			$server = str_replace(' ', '-', $server);
 		}
 			
-		$url = 'https://' .$_SESSION['r']. '.api.battle.net/wow/guild/' .$server. '/' .$guild. '?fields=members&locale=en_GB&apikey=qxdrxhra6h3z5n3vrz3xks7779krxdcw';
+		$url = 'https://' .$_SESSION['r']. '.api.battle.net/wow/guild/' .$server. '/' .$guild. '?fields=members&locale=en_GB&apikey=KEY_HERE';
 
 		$data = @file_get_contents($url, false, stream_context_create($arrContextOptions));
 		if($data === FALSE) {
@@ -251,7 +251,7 @@ if(isset($_GET['i'])) {
 	echo '<p id="cent">Select characters you would like to import:</p>
 	<form action="" method="POST" style="text-align: center;">
 	<select multiple name="c[]" style="width: 250px; height: 250px;">';
-	$url = 'https://' .$_SESSION['r']. '.api.battle.net/wow/guild/' .$server. '/' .$guild. '?fields=members&locale=en_GB&apikey=qxdrxhra6h3z5n3vrz3xks7779krxdcw';
+	$url = 'https://' .$_SESSION['r']. '.api.battle.net/wow/guild/' .$server. '/' .$guild. '?fields=members&locale=en_GB&apikey=KEY_HERE';
 
 	$data = @file_get_contents($url, false, stream_context_create($arrContextOptions));
 	if($data != '') {

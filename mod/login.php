@@ -9,14 +9,34 @@ echo '<p style="color: orange; text-align: center;">' .$count. ' guilds register
 <select name="g" id="cent">
 <option selected disabled>select your guild</option>';
 
-$alph = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+$alph = array('Russian', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
 
 foreach($alph as $letter) {
-	echo '<optgroup label="' .$letter. '">';
+	if($letter != 'Russian') {
+		echo '<optgroup label="' .$letter. '">';
 		$guilds = mysqli_query($stream, "SELECT `id`, `g`, `r`, `s` FROM `guilds` WHERE LEFT(`g`, 1) = '" .$letter. "' ORDER BY `g` ASC");
 		while($guild = mysqli_fetch_array($guilds)) {			
 			echo '<option value="' .$guild['id']. '">' .$guild['g']. ' (' .$guild['r']. '-' .$guild['s']. ')</option>';
 		}
+	}
+	elseif($letter == 'Russian') {
+		echo '<optgroup label="' .$letter. '">';
+		
+		$alph = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+		foreach($alph as $russian) {
+			if(!isset($sql)) {
+				$sql = 'WHERE LEFT(`g`, 1) != "' .$russian. '"';
+			}
+			elseif(isset($sql)) {
+				$sql.= ' AND LEFT (`g`, 1) != "' .$russian. '"';
+			}
+		}
+				
+		$guilds = mysqli_query($stream, "SELECT `id`, `g`, `r`, `s` FROM `guilds` " .$sql. " ORDER BY `g` ASC");
+		while($guild = mysqli_fetch_array($guilds)) {
+			echo '<option value="' .$guild['id']. '">' .$guild['g']. ' (' .$guild['r']. '-' .$guild['s']. ')</option>';
+		}
+	}
 	echo '</optgroup>';
 }
 echo '</select><br />

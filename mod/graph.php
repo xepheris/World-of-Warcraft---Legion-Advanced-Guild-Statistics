@@ -42,21 +42,17 @@ if(!isset($_POST['c'])) {
 			['Artifact Level', 'Itemlevel'],
 			<?php
 			foreach($chars as $char) {
-				$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `ilvlavg` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "'"));
+				$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `ilvlavg` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "' AND `ilvlavg` >= '840'"));
 				echo "[" .$data['ilvlavg']. ", " .$data['alvl']. "], ";
 			}
-			$lowest_ilvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`ilvlavg`) AS `min` FROM `" .$_SESSION['t']. "`"));
-			$highest_ilvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`ilvlavg`) AS `max` FROM `" .$_SESSION['t']. "`"));
-			$lowest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`alvl`) AS `min` FROM `" .$_SESSION['t']. "`"));
-			$highest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`alvl`) AS `max` FROM `" .$_SESSION['t']. "`"));
 			
 			?>
 		]);
 
 		var options = {
 			title: 'Artifact Level vs Itemlevel comparison',
-			hAxis: {title: 'Itemlevel', minValue: <?php echo $lowest_ilvl['min']; ?> , maxValue: <?php echo $highest_ilvl['max']; ?>},
-			vAxis: {title: 'Artifact Level', minValue: <?php echo $lowest_alvl['min']; ?>, maxValue: <?php echo $highest_alvl['max']; ?>},
+			hAxis: {title: 'Itemlevel', minValue: 840 , maxValue: 940},
+			vAxis: {title: 'Artifact Level', minValue: 0, maxValue: 54},
 			backgroundColor: 'white',
 			legend: { position: 'none' }
 		};
@@ -77,9 +73,6 @@ if(!isset($_POST['c'])) {
 				$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `sum` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "'"));
 				echo "[" .$data['alvl']. ", " .$data['sum']. "], ";
 			}
-			$lowest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`alvl`) AS `min` FROM `" .$_SESSION['t']. "`"));
-			$highest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`alvl`) AS `max` FROM `" .$_SESSION['t']. "`"));
-			$lowest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`sum`) AS `min` FROM `" .$_SESSION['t']. "`"));
 			$highest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`sum`) AS `max` FROM `" .$_SESSION['t']. "`"));
 			
 			?>
@@ -87,8 +80,8 @@ if(!isset($_POST['c'])) {
 
 		var options = {
 			title: 'Artifact Level vs Mythics done comparison',
-			hAxis: {title: 'Artifact Level', minValue: <?php echo $lowest_alvl['min']; ?> , maxValue: <?php echo $highest_alvl['max']; ?>},
-			vAxis: {title: 'Mythics done', minValue: <?php echo $lowest_sum['min']; ?>, maxValue: <?php echo $highest_sum['max']; ?>},
+			hAxis: {title: 'Artifact Level', minValue: 0, maxValue: 54},
+			vAxis: {title: 'Mythics done', minValue: 0, maxValue: <?php echo $highest_sum['max']; ?>},
 			backgroundColor: 'white',
 			legend: { position: 'none' },			
 		};
@@ -106,12 +99,9 @@ if(!isset($_POST['c'])) {
 			['Mythics done', 'Itemlevel equipped, Mythics done'],
 			<?php
 			foreach($chars as $char) {
-				$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `ilvlavg`, `sum` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "'"));
+				$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `ilvlavg`, `sum` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "' AND `ilvlavg` >= '840'"));
 				echo "[" .$data['ilvlavg']. ", " .$data['sum']. "], ";
 			}
-			$lowest_ilvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`ilvlavg`) AS `min` FROM `" .$_SESSION['t']. "`"));
-			$highest_ilvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`ilvlavg`) AS `max` FROM `" .$_SESSION['t']. "`"));
-			$lowest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`sum`) AS `min` FROM `" .$_SESSION['t']. "`"));
 			$highest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`sum`) AS `max` FROM `" .$_SESSION['t']. "`"));
 			
 			?>
@@ -119,8 +109,8 @@ if(!isset($_POST['c'])) {
 
 		var options = {
 			title: 'Itemlevel equipped vs Mythics done comparison',
-			hAxis: {title: 'Itemlevel', minValue: <?php echo $lowest_ilvl['min']; ?> , maxValue: <?php echo $highest_ilvl['max']; ?>},
-			vAxis: {title: 'Mythics done', minValue: <?php echo $lowest_sum['min']; ?>, maxValue: <?php echo $highest_sum['max']; ?>},
+			hAxis: {title: 'Itemlevel', minValue: 840 , maxValue: 940},
+			vAxis: {title: 'Mythics done', minValue: 0, maxValue: <?php echo $highest_sum['max']; ?>},
 			backgroundColor: 'white',
 			legend: { position: 'none' },			
 		};
@@ -151,7 +141,7 @@ if(!isset($_POST['c'])) {
 				foreach($guildids as $guildid) {
 					$fetch = mysqli_query($stream, "SELECT DISTINCT(`ch`) FROM `" .$guildid. "` ORDER BY `ch` ASC");
 					while($chars = mysqli_fetch_array($fetch)) {
-						$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `ilvlavg`, `sum` FROM `" .$guildid. "` WHERE `ch` = '" .$chars['ch']. "'"));
+						$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `ilvlavg`, `sum` FROM `" .$guildid. "` WHERE `ch` = '" .$chars['ch']. "' AND `ilvlavg` >= '840'"));
 						$insert = mysqli_query($stream, "INSERT INTO `gg` (`char`, `alvl`, `ilvl`, `sum`) VALUES ('" .$chars['ch']. "', '" .$data['alvl']. "', '" .$data['ilvlavg']. "', '" .$data['sum']. "'); ");
 					}
 				}
@@ -159,22 +149,18 @@ if(!isset($_POST['c'])) {
 			}
 			
 			
-			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `alvl` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '800'");
+			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `alvl` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '840'");
 			while($chardata = mysqli_fetch_array($graphdata)) {
 				echo "[" .$chardata['ilvl']. ", " .$chardata['alvl']. "], ";
 			}
-			$lowest_ilvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`ilvl`) AS `min` FROM `gg` WHERE `id` != '999999'"));
-			$highest_ilvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`ilvl`) AS `max` FROM `gg` WHERE `id` != '999999'"));
-			$lowest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`alvl`) AS `min` FROM `gg` WHERE `id` != '999999'"));
-			$highest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`alvl`) AS `max` FROM `gg` WHERE `id` != '999999'"));
 			
 			?>
 		]);
 
 		var options = {
 			title: 'Itemlevel vs Artifact Level comparison',
-			hAxis: {title: 'Itemlevel', minValue: <?php echo $lowest_ilvl['min']; ?> , maxValue: <?php echo $highest_ilvl['max']; ?>},
-			vAxis: {title: 'Artifact Level', minValue: <?php echo $lowest_alvl['min']; ?>, maxValue: <?php echo $highest_alvl['max']; ?>},
+			hAxis: {title: 'Itemlevel', minValue: 840 , maxValue: 940 },
+			vAxis: {title: 'Artifact Level', minValue: 0, maxValue: 54 },
 			backgroundColor: 'white',
 			legend: { position: 'none' }
 		};
@@ -196,18 +182,15 @@ if(!isset($_POST['c'])) {
 			while($chardata = mysqli_fetch_array($graphdata)) {
 				echo "[" .$chardata['alvl']. ", " .$chardata['sum']. "], ";
 			}
-			$lowest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`sum`) AS `min` FROM `gg` WHERE `id` != '999999'"));
 			$highest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`sum`) AS `max` FROM `gg` WHERE `id` != '999999'"));
-			$lowest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`alvl`) AS `min` FROM `gg` WHERE `id` != '999999'"));
-			$highest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`alvl`) AS `max` FROM `gg` WHERE `id` != '999999'"));
 			
 			?>
 		]);
 
 		var options = {
 			title: 'Artifact Level vs Mythics done comparison',
-			hAxis: {title: 'Artifact Level', minValue: <?php echo $lowest_alvl['min']; ?> , maxValue: <?php echo $highest_alvl['max']; ?>},
-			vAxis: {title: 'Mythics done', minValue: <?php echo $lowest_sum['min']; ?>, maxValue: <?php echo $highest_sum['max']; ?>},
+			hAxis: {title: 'Artifact Level', minValue: 0, maxValue: 54},
+			vAxis: {title: 'Mythics done', minValue: 0, maxValue: <?php echo $highest_sum['max']; ?>},
 			backgroundColor: 'white',
 			legend: { position: 'none' }
 		};
@@ -225,22 +208,19 @@ if(!isset($_POST['c'])) {
 			['Mythics done', 'Itemlevel equipped, Mythics done'],
 			<?php
 			
-			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `sum` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '800'");
+			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `sum` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '840'");
 			while($chardata = mysqli_fetch_array($graphdata)) {
 				echo "[" .$chardata['ilvl']. ", " .$chardata['sum']. "], ";
 			}
-			$lowest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`ilvl`) AS `min` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '800'"));
 			$highest_sum = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`ilvl`) AS `max` FROM `gg` WHERE `id` != '999999'"));
-			$lowest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MIN(`sum`) AS `min` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '800'"));
-			$highest_alvl = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`sum`) AS `max` FROM `gg` WHERE `id` != '999999'"));
 			
 			?>
 		]);
 
 		var options = {
 				title: 'Itemlevel equipped vs Mythics done comparison',
-			hAxis: {title: 'Itemlevel', minValue: <?php echo $lowest_ilvl['min']; ?> , maxValue: <?php echo $highest_ilvl['max']; ?>},
-			vAxis: {title: 'Mythics done', minValue: <?php echo $lowest_sum['min']; ?>, maxValue: <?php echo $highest_sum['max']; ?>},
+			hAxis: {title: 'Itemlevel', minValue: 840 , maxValue: 940},
+			vAxis: {title: 'Mythics done', minValue: 0, maxValue: <?php echo $highest_sum['max']; ?>},
 			backgroundColor: 'white',
 			legend: { position: 'none' }
 		};
