@@ -3,6 +3,7 @@
 if($_POST['r'] == 'EU' || $_POST['r'] == 'US') {
 	
 	$pw = md5($_POST['gpw']);
+	$sl = md5($_POST['gn'].$_POST['r'].$_POST['s']);
 
 	// CHECK IF GUILD ALREADY EXISTS
 	include('dbcon.php');
@@ -33,14 +34,33 @@ if($_POST['r'] == 'EU' || $_POST['r'] == 'US') {
 			$data = json_decode($data, true);
 			
 			if($data['name'] == $_POST['gn']) {
-				mysqli_query($stream, "INSERT INTO `guilds` (`g`, `r`, `s`, `l`, `p`) VALUES ('" .$_POST['gn']. "', '" .$_POST['r']. "', '" .$_POST['s']. "', '" .time('now'). "', '" .$pw. "');");
+				mysqli_query($stream, "INSERT INTO `guilds` (`g`,
+				`r`,
+				`s`,
+				`l`,
+				`p`,
+				`ap_low`,
+				`ap_high`,
+				`g_low`,
+				`g_high`,
+				`sl`)
+				VALUES
+				('" .$_POST['gn']. "',
+				'" .$_POST['r']. "',
+				'" .addslashes($_POST['s']). "',
+				'" .time('now'). "',
+				'" .$pw. "',
+				'0.45',
+				'0.65',
+				'0.6',
+				'0.8',
+				'" .$sl. "');");
 				echo '<h2 id="cent" style="color: green;">Guild inserted, you may login now!</h2>';
 			}
 			else {
 				echo '<h2 id="cent" style="color: red;">According to the Armory, the guild you wanted to enter does not exist.<br />Please keep in mind that the guild name is <u>case-sensitive</u>!';
 			}
 		}
-		
 	}
 }
 	

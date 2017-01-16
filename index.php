@@ -4,17 +4,31 @@ echo '<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="author" content="reddit.com/u/xepher1s" />
+<meta name="author" content="Xepheris (EU-Blackmoore)" />
 <meta name="robots" content="index, nofollow" />
 <meta name="language" content="en" />
-<meta name="description" content="" />
-<meta name="keywords" lang="en" content="" />
+<meta name="description" content="Advanced Guild Statistics including Artifact Power, Level, Mythics done, Highest M+, Equip comparison including tooltips, relative colorization and many more functions!" />
+<meta name="keywords" lang="en" content="advanced guild statistics, guild, statistics, artifact power, artifact level, equip, wow, legion, addon, expansion, tracking, loot, council, loot council" />
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <script type="text/javascript" src="js/jquery-1.10.1.min.js"></script>
 <title>Advanced Guild Statistics</title>
 </head>
 <body>
 <div id="content">';
+
+
+if(isset($_GET['sl']) && strlen($_GET['sl']) == '32') {
+	include('mod/dbcon.php');	
+	$correct = mysqli_fetch_array(mysqli_query($stream, "SELECT `id`, `g`, `r`, `s` FROM `guilds` WHERE `sl` = '" .$_GET['sl']. "'"));
+	
+	if(!empty($correct['g'])) {
+		$_SESSION['t'] = $correct['id'];
+		$_SESSION['g'] = $correct['g'];
+		$_SESSION['r'] = $correct['r'];
+		$_SESSION['s'] = $correct['s'];
+		$_SESSION['guest'] = '1';
+	}	
+}
 
 if(isset($_GET['die'])) {
 	$_SESSION['g'] = '';
@@ -44,7 +58,7 @@ if(isset($_GET['showequip']) && is_numeric($_GET['showequip']) && $_GET['showequ
 if($_SESSION['showequip'] == '1') {
 	echo '<link rel="stylesheet" href="css/core-weq.css" />';
 }
-elseif(!isset($_SESSIN['showequip']) || $_SESSION['showequip'] == '0') {
+elseif(!isset($_SESSION['showequip']) || $_SESSION['showequip'] == '0') {
 	echo '<link rel="stylesheet" href="css/core.css" />';
 }
 

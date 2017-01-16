@@ -1,4 +1,4 @@
-ap<script defer src="http://wow.zamimg.com/widgets/power.js"></script>
+<script defer src="http://wow.zamimg.com/widgets/power.js"></script>
 <script>
 var wowhead_tooltips = {
 	"hide": {
@@ -14,12 +14,14 @@ var wowhead_tooltips = {
 <?php
 
 if(isset($_GET['r']) && is_numeric($_GET['r'])) {
-	include('dbcon.php');
-	$name = mysqli_fetch_array(mysqli_query($stream, "SELECT `ch` FROM `" .$_SESSION['t']. "` WHERE `id` = '" .$_GET['r']. "'"));
+	if(!isset($_SESSION['guest'])) {
+		include('dbcon.php');
+		$name = mysqli_fetch_array(mysqli_query($stream, "SELECT `ch` FROM `" .$_SESSION['t']. "` WHERE `id` = '" .$_GET['r']. "'"));
 	
-	mysqli_query($stream, "DELETE FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$name['ch']. "'");
-	mysqli_query($stream, "DELETE FROM `" .$_SESSION['t']. "_archive` WHERE `ch` = '" .$name['ch']. "'");
-	mysqli_query($stream, "DELETE FROM `gg` WHERE `char` = '" .$name['ch']. "'");
+		mysqli_query($stream, "DELETE FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$name['ch']. "'");
+		mysqli_query($stream, "DELETE FROM `" .$_SESSION['t']. "_archive` WHERE `ch` = '" .$name['ch']. "'");
+		mysqli_query($stream, "DELETE FROM `gg` WHERE `char` = '" .$name['ch']. "'");
+	}
 }
 
 if($_GET['u'] == 'all') {
@@ -123,6 +125,7 @@ if(isset($_GET['sett'])) {
 		<div class="tr" style="text-align: center;">gear <u>worse than</u> (itemlevel-800)* <input type="text" maxlength="4" value="' .$g_thresholds['g_low']. '" name="g_low" style="width: 30px;" required /> of your highest will be considered <span style="color: red;">bad</span></div>
 		<div class="tr" style="text-align: center;">gear between these two values will appear <span style="color: orange;">orange</span></div>
 		<div class="tr" style="text-align: center;">gear <u>higher equal than</u> (itemlevel-800)* <input type="text" maxlength="4" value="' .$g_thresholds['g_high']. '" name="g_high" style="width: 30px;" required /> of your highest will be considered <span style="color: green;">good</span></div>
+		<div class="tr" style="text-align: center;"><br >EXAMPLE: the best items of your guild will be the legendaries (currently 910) We compare with 890, 870 and 840.<br /><span style="color: green;">(890-800)/(910-800) = 0.81 => green</span> | <span style="color: orange;">(870-800)/(910-800) = 0.63 => orange</span> | <span style="color: red;">(840-800)/(910-800) = 0.36 => red</span></div>
 		<div class="tr" style="text-align: center;"><button type="submit">Change Equipment thresholds</button></center></div>
 		</div>
 		</form>';
@@ -301,9 +304,14 @@ if(isset($_GET['i'])) {
 	</form>';
 }
 	
-if(!isset($_GET['i'])) {			
+if(!isset($_GET['i']) || isset($_GET['sl'])) {			
 	if($count_rows['users'] == '' || $count_rows['users'] == '0') {
-		echo '<meta http-equiv="refresh" content="0;url=http://guild.artifactpower.info/?i" />';
+		if(!isset($_SESSION['guest'])) {
+			echo '<meta http-equiv="refresh" content="0;url=http://guild.artifactpower.info/?i" />';
+		}
+		elseif(isset($_SESSION['guest'])) {
+			echo '<p style="color: red; text-align: center;">Sorry, this guild has no characters listed yet and you may not import as a guest.</p>';
+		}
 	}	
 	else {
 		echo '<div class="t">
@@ -591,9 +599,15 @@ if(!isset($_GET['i'])) {
 			echo '<div class="tc"><span ' .$color_en. '>' .$data['en']. '/7</span></div>
 			<div class="tc"><span ' .$color_tov. '>' .$data['tov']. '/3</span></div>
 			<div class="tc"><span ' .$color_nh. '>' .$data['nh']. '/10</span></div>
-			<div class="tc"><a href="?u=' .$data['id']. '"><img src="img/upd.png" alt="404" style="width: 13px;"/></a></div>
-			<div class="tc"><a href="?r=' .$data['id']. '"><img src="img/rmv.png" alt="404" style="width: 13px;"/></a></div>
-			</div>';
+			<div class="tc"><a href="?u=' .$data['id']. '"><img src="img/upd.png" alt="404" style="width: 13px;"/></a></div>';
+			
+			if($_SESSION['guest'] == '1') {
+				echo '<div class="tc"></div>';
+			}
+			elseif($_SESSION['guest'] != '1') {
+				echo '<div class="tc"><a href="?r=' .$data['id']. '"><img src="img/rmv.png" alt="404" style="width: 13px;"/></a></div>';
+			}
+			echo '</div>';
 			$num++;
 			unset($ap_incr); unset($sum_old); unset($bags_old); unset($ilvlavg_old); unset($alvl_old);
 		}

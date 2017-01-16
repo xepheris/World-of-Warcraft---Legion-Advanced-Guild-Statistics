@@ -44,19 +44,21 @@ echo '</select><br />
 <br />
 <button type="submit" id="cent">Login</button>
 </form>
-<p id="cent"><b><a href="http://check.artifactpower.info/?c=Xepheris&r=EU&s=Blackmoore">DEMO with reduced functions</a></b>
+<p id="cent"><b><a href="http://check.artifactpower.info/?c=Xepheris&r=EU&s=Blackmoore">DEMO with reduced functions</a><br />
+<a href="http://guild.artifactpower.info/?sl=8cb923fe2227b58015520ea2aee020bb">GUILD DEMO (guest view)</a></b>
 <p id="cent">
 <b>What is included?</b><br />
-• sorting<br />
 • missing enchant/gem filter<br />
+• guest access (login without password or via shared link as admin)<br />
 • relative colorization of many columns<br />
 • individual raid progress<br />
 • graphs for all tracked characters aswell as the guild as whole<br />
+• sorting<br />
 <br />
 <b>Who needs this?</b><br />
 • any active raiding guild, especially on mythic<br />
 • loot councils
-<p id="cent"><b>Try it out below!</b><br />Your guild has been wrongfully claimed? Write me a mail to <a href="mailto:xepheris.dh.tank@gmail.com">xepheris.dh.tank@gmail.com</a>!</p>	
+<p id="cent"><b>Try it out below!</b></p>	
 <form action="" method="POST" id="cent">
 <input type="text" name="gn" value="" placeholder="guild name case sensitive" />
 <input type="password" name="gpw" value="" placeholder="password" />
@@ -64,6 +66,8 @@ echo '</select><br />
 <select name="s" id="s">
 </select>
 <button type="submit">Insert</button>
-</form>';
+</form>
+<p id="cent">Your guild has been wrongfully claimed? Bugs? Suggestions?<br />Write me a mail to <a href="mailto:xepheris.dh.tank@gmail.com">xepheris.dh.tank@gmail.com</a>!<br />
+<a href="https://github.com/xepheris/World-of-Warcraft---Legion-Advanced-Guild-Statistics" style="font-size: 12px;">source code</a></p>';
 
 ?>

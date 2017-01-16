@@ -4,7 +4,7 @@ include('dbcon.php');
 include('top.php');
 
 $chars = array();
-$fetch = mysqli_query($stream, "SELECT DISTINCT(`ch`) FROM `" .$_SESSION['t']. "` ORDER BY `ch` ASC");
+$fetch = mysqli_query($stream, "SELECT DISTINCT(`ch`) FROM `" .$_SESSION['t']. "` WHERE `ilvlavg` >= '840' ORDER BY `ch` ASC");
 while($char = mysqli_fetch_array($fetch)) {
 	array_push($chars, $char['ch']);
 }
@@ -42,7 +42,7 @@ if(!isset($_POST['c'])) {
 			['Artifact Level', 'Itemlevel'],
 			<?php
 			foreach($chars as $char) {
-				$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `ilvlavg` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "' AND `ilvlavg` >= '840'"));
+				$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `ilvlavg` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "'"));
 				echo "[" .$data['ilvlavg']. ", " .$data['alvl']. "], ";
 			}
 			
@@ -50,7 +50,7 @@ if(!isset($_POST['c'])) {
 		]);
 
 		var options = {
-			title: 'Artifact Level vs Itemlevel comparison',
+			title: 'Itemlevel vs Artifact Level comparison',
 			hAxis: {title: 'Itemlevel', minValue: 840 , maxValue: 940},
 			vAxis: {title: 'Artifact Level', minValue: 0, maxValue: 54},
 			backgroundColor: 'white',
@@ -139,9 +139,9 @@ if(!isset($_POST['c'])) {
 					array_push($guildids, $data['id']);
 				}
 				foreach($guildids as $guildid) {
-					$fetch = mysqli_query($stream, "SELECT DISTINCT(`ch`) FROM `" .$guildid. "` ORDER BY `ch` ASC");
+					$fetch = mysqli_query($stream, "SELECT DISTINCT(`ch`) FROM `" .$guildid. "` WHERE `ilvlavg` >= '840' ORDER BY `ch` ASC");
 					while($chars = mysqli_fetch_array($fetch)) {
-						$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `ilvlavg`, `sum` FROM `" .$guildid. "` WHERE `ch` = '" .$chars['ch']. "' AND `ilvlavg` >= '840'"));
+						$data = mysqli_fetch_array(mysqli_query($stream, "SELECT `alvl`, `ilvlavg`, `sum` FROM `" .$guildid. "` WHERE `ch` = '" .$chars['ch']. "'"));
 						$insert = mysqli_query($stream, "INSERT INTO `gg` (`char`, `alvl`, `ilvl`, `sum`) VALUES ('" .$chars['ch']. "', '" .$data['alvl']. "', '" .$data['ilvlavg']. "', '" .$data['sum']. "'); ");
 					}
 				}
@@ -149,7 +149,7 @@ if(!isset($_POST['c'])) {
 			}
 			
 			
-			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `alvl` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '840'");
+			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `alvl` FROM `gg` WHERE `id` != '999999' LIMIT 5000");
 			while($chardata = mysqli_fetch_array($graphdata)) {
 				echo "[" .$chardata['ilvl']. ", " .$chardata['alvl']. "], ";
 			}
@@ -159,7 +159,7 @@ if(!isset($_POST['c'])) {
 
 		var options = {
 			title: 'Itemlevel vs Artifact Level comparison',
-			hAxis: {title: 'Itemlevel', minValue: 840 , maxValue: 940 },
+			hAxis: {title: 'Itemlevel', minValue: 840, maxValue: 940 },
 			vAxis: {title: 'Artifact Level', minValue: 0, maxValue: 54 },
 			backgroundColor: 'white',
 			legend: { position: 'none' }
@@ -178,7 +178,7 @@ if(!isset($_POST['c'])) {
 			['Artifact Level', 'Aritfact Level, Mythics done'],
 			<?php
 			
-			$graphdata = mysqli_query($stream, "SELECT `alvl`, `sum` FROM `gg` WHERE `id` != '999999'");
+			$graphdata = mysqli_query($stream, "SELECT `alvl`, `sum` FROM `gg` WHERE `id` != '999999' LIMIT 5000");
 			while($chardata = mysqli_fetch_array($graphdata)) {
 				echo "[" .$chardata['alvl']. ", " .$chardata['sum']. "], ";
 			}
@@ -208,7 +208,7 @@ if(!isset($_POST['c'])) {
 			['Mythics done', 'Itemlevel equipped, Mythics done'],
 			<?php
 			
-			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `sum` FROM `gg` WHERE `id` != '999999' AND `ilvl` > '840'");
+			$graphdata = mysqli_query($stream, "SELECT `ilvl`, `sum` FROM `gg` WHERE `id` != '999999' LIMIT 5000");
 			while($chardata = mysqli_fetch_array($graphdata)) {
 				echo "[" .$chardata['ilvl']. ", " .$chardata['sum']. "], ";
 			}
