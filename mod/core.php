@@ -14,14 +14,7 @@ var wowhead_tooltips = {
 <?php
 
 if(isset($_GET['r']) && is_numeric($_GET['r'])) {
-	if(!isset($_SESSION['guest'])) {
-		include('dbcon.php');
-		$name = mysqli_fetch_array(mysqli_query($stream, "SELECT `ch` FROM `" .$_SESSION['t']. "` WHERE `id` = '" .$_GET['r']. "'"));
-	
-		mysqli_query($stream, "DELETE FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$name['ch']. "'");
-		mysqli_query($stream, "DELETE FROM `" .$_SESSION['t']. "_archive` WHERE `ch` = '" .$name['ch']. "'");
-		mysqli_query($stream, "DELETE FROM `gg` WHERE `char` = '" .$name['ch']. "'");
-	}
+	include('remover.php');
 }
 
 if($_GET['u'] == 'all') {
@@ -34,131 +27,7 @@ if($_GET['u'] == 'all') {
 }
 
 if(isset($_GET['sett'])) {
-	include('top.php');
-	require_once('dbcon.php');
-		
-	// UPDATE PASSWORD
-	if(isset($_POST['oldpw']) && isset($_POST['newpw1']) && isset($_POST['newpw2'])) {
-		// COMPARE NEWPW1 AND NEWPW2
-		if($_POST['newpw1'] != $_POST['newpw2']) {
-			echo '<p style="color: red; text-align: center;">Your new password repetition was incorrect, try again.</p>';
-		}
-		elseif($_POST['newpw1'] == $_POST['newpw2']) {
-			// FETCH OLD, COMPARE THAT TO GIVEN
-			$oldpw = mysqli_fetch_array(mysqli_query($stream, "SELECT `p` FROM `guilds` WHERE `id` = '" .$_SESSION['t']. "'"));
-			
-			if(md5($_POST['oldpw']) != $oldpw['p']) {
-				echo '<p style="color: red; text-align: center;">Your old password is incorrect, try again.<br />Redirecting in 2 seconds.</p>';
-				echo '<meta http-equiv="refresh" content="2;url=http://guild.artifactpower.info/?sett" />';
-			}
-			elseif(md5($_POST['oldpw']) == $oldpw['p']) {
-				$update = mysqli_query($stream, "UPDATE `guilds` SET `p` = '" .md5($_POST['newpw1']). "' WHERE `id` = '" .$_SESSION['t']. "'");
-				if($update) {
-					echo '<p style="color: green; text-align: center;">Your password has been updated - please remember: THIS CHANGE IS IMMEDIATE!</p>';
-				}
-				else {
-					echo '<p style="color: red; text-align: center;">Sorry, server did not respond. Please try again later.</p>';
-				}
-			}
-		}		
-	}
-	
-	// UPDATE GEAR THRESHOLD
-	if(isset($_POST['g_low']) && isset($_POST['g_high'])) {
-		if((strlen($_POST['g_low']) > '4') || (strlen($_POST['g_high']) > '4')) {
-			echo '<p style="color: red; text-align: center;">Maximum threshold length is 4 characters (ex. 0.65).</p>';
-		}
-		elseif((strlen($_POST['g_low']) <= '4') || (strlen($_POST['g_high']) <= '4')) {
-			if($_POST['g_low'] < '1' && $_POST['g_high'] >= '0.05') {
-				if($_POST['g_low'] > $_POST['g_high']) {
-					echo '<p style="color: red; text-align: center;">Having a higher threshold for bad gear than for good does not make sense, please insert proper values.</p>';
-				}
-				else {
-					$update = mysqli_query($stream, "UPDATE `guilds` SET `g_low` = '" .$_POST['g_low']. "', `g_high` = '" .$_POST['g_high']. "' WHERE `id` = '" .$_SESSION['t']. "'");
-					if($update) {
-						echo '<p style="color: green; text-align: center;">Your personal threshold for gear has been updated. This change is already in effect.</p>';
-					}
-					else {
-						echo '<p style="color: red; text-align: center;">Sorry, server did not respond. Please try again later.</p>';
-					}
-				}
-			}
-			else {
-				echo '<p style="color: red; text-align: center;">Values must be between 0.05 and 1.</p>';
-			}
-		}
-	}
-	
-	// UPDATE AP THRESHOLD
-	if(isset($_POST['ap_low']) && isset($_POST['ap_high'])) {
-		if((strlen($_POST['ap_low']) > '4') || (strlen($_POST['ap_high']) > '4')) {
-			echo '<p style="color: red; text-align: center;">Maximum threshold length is 4 characters (ex. 0.65).</p>';
-		}
-		elseif((strlen($_POST['ap_low']) <= '4') || (strlen($_POST['ap_high']) <= '4')) {
-			if($_POST['ap_low'] < '1' && $_POST['ap_high'] >= '0.05') {
-				if($_POST['ap_low'] > $_POST['ap_high']) {
-					echo '<p style="color: red; text-align: center;">Having a higher threshold for low Artifact Power than for high does not make sense, please insert proper values.</p>';
-				}
-				else {
-					$update = mysqli_query($stream, "UPDATE `guilds` SET `ap_low` = '" .$_POST['ap_low']. "', `ap_high` = '" .$_POST['ap_high']. "' WHERE `id` = '" .$_SESSION['t']. "'");
-					if($update) {
-						echo '<p style="color: green; text-align: center;">Your personal threshold for Artifact Power has been updated. This change is already in effect.</p>';
-					}
-					else {
-						echo '<p style="color: red; text-align: center;">Sorry, server did not respond. Please try again later.</p>';
-					}
-				}
-			}
-			else {
-				echo '<p style="color: red; text-align: center;">Values must be between 0.05 and 1.</p>';
-			}
-		}
-	}
-	
-	// GEAR THRESHOLD CHANGE
-	if(!isset($_POST['g_low']) && !isset($_POST['g_mid']) && !isset($_POST['g_high'])) {
-		$g_thresholds = mysqli_fetch_array(mysqli_query($stream, "SELECT `g_low`, `g_high` FROM `guilds` WHERE `id` = '" .$_SESSION['t']. "'"));
-		echo '
-		<p style="text-align: center;">The following settings will change your guilds item colorization depending on the individual characters itemlevel<br/>Standard values are: gear bad: 0.6 | gear good: 0.8 | ap low: 0.45 | ap high: 0.65</p>
-		<form action="?sett" method="POST">
-		<div class="t">
-		<div class="tr" style="text-align: center;">gear <u>worse than</u> (itemlevel-800)* <input type="text" maxlength="4" value="' .$g_thresholds['g_low']. '" name="g_low" style="width: 30px;" required /> of your highest will be considered <span style="color: red;">bad</span></div>
-		<div class="tr" style="text-align: center;">gear between these two values will appear <span style="color: orange;">orange</span></div>
-		<div class="tr" style="text-align: center;">gear <u>higher equal than</u> (itemlevel-800)* <input type="text" maxlength="4" value="' .$g_thresholds['g_high']. '" name="g_high" style="width: 30px;" required /> of your highest will be considered <span style="color: green;">good</span></div>
-		<div class="tr" style="text-align: center;"><br >EXAMPLE: the best items of your guild will be the legendaries (currently 910) We compare with 890, 870 and 840.<br /><span style="color: green;">(890-800)/(910-800) = 0.81 => green</span> | <span style="color: orange;">(870-800)/(910-800) = 0.63 => orange</span> | <span style="color: red;">(840-800)/(910-800) = 0.36 => red</span></div>
-		<div class="tr" style="text-align: center;"><button type="submit">Change Equipment thresholds</button></center></div>
-		</div>
-		</form>';
-	}
-	
-	// AP THRESHOLD CHANGE
-	if(!isset($_POST['ap_low']) && !isset($_POST['ap_mid']) && !isset($_POST['ap_high'])) {
-		$ap_thresholds = mysqli_fetch_array(mysqli_query($stream, "SELECT `ap_low`, `ap_high` FROM `guilds` WHERE `id` = '" .$_SESSION['t']. "'"));
-		echo '<br />
-		<form action="?sett" method="POST">
-		<div class="t">
-		<div class="tr" style="text-align: center;">AP <u>lower than</u> <input type="text" maxlength="4" value="' .$ap_thresholds['ap_low']. '" name="ap_low" style="width: 30px;" required /> of your highest members AP will be considered <span style="color: red;">bad</span></div>
-		<div class="tr" style="text-align: center;">AP between these two values will appear <span style="color: orange;">orange</span></div>
-		<div class="tr" style="text-align: center;">AP <u> higher or equal than</u> <input type="text" maxlength="4" value="' .$ap_thresholds['ap_high']. '" name="ap_high" style="width: 30px;" required /> of your highest members AP will be considered <span style="color: green;">good</span></div>
-		<div class="tr" style="text-align: center;"><button type="submit">Change Artifact Power thresholds</button></div>
-		</div>
-		</form>';
-	}
-	
-	// PASSWORD CHANGE
-	if(!isset($_POST['oldpw']) && !isset($_POST['newpw1']) && !isset($_POST['newpw2'])) {
-		echo '<hr>
-		<form action="?sett" method="POST">
-		<div class="t">
-		<div class="tr" style="text-align: center;"><div class="td"><input type="password" placeholder="old password" name="oldpw" style="width: 230px;" required /></div></div>
-		<div class="tr" style="text-align: center;"><div class="td"><input type="password" placeholder="new password" name="newpw1" style="width: 230px;" required /></div></div>
-		<div class="tr" style="text-align: center;"><div class="td"><input type="password" placeholder="repeat new password" name="newpw2" style="width: 230px;" required /></div></div>
-		<div class="tr" style="text-align: center;"><button type="submit">Change password - CAUTION: INSTANT!</button></div>
-		</div>
-		</form>';
-	}
-	
-	die();
+	include('settings.php');
 }
 
 if(isset($_GET['u']) && is_numeric($_GET['u'])) {
@@ -174,44 +43,7 @@ if(!empty($_SESSION['g'])) {
 }
 		
 if(isset($_POST['gr'])) {
-	
-	if(is_numeric($_POST['gr']) && $_POST['gr'] <= '10') {
-		// ENABLE SSL
-		$arrContextOptions = array('ssl' => array('verify_peer' => false, 'verify_peer_name' => flase, ),);
-		
-		$guild = $_SESSION['g'];
-		if(strpos($guild, ' ') !== false) {
-			$guild = str_replace(' ', '%20', $guild);
-		}
-		$server = $_SESSION['s'];
-		if(strpos($server, ' ') !== false) {
-			$server = str_replace(' ', '-', $server);
-		}
-			
-		$url = 'https://' .$_SESSION['r']. '.api.battle.net/wow/guild/' .$server. '/' .$guild. '?fields=members&locale=en_GB&apikey=KEY_HERE';
-
-		$data = @file_get_contents($url, false, stream_context_create($arrContextOptions));
-		if($data === FALSE) {
-			echo '<p id="error">Sorry, according to the <a href="http://' .$_SESSION['r']. '.battle.net/wow/guild/' .$_SESSION['s']. '/' .$guild. '/">armory your guild</a> does not exist yet or anymore. Please wait until the armory has updated.';
-		}
-		elseif($data != '') {
-			$data = json_decode($data, true);
-			$chararray = array();
-						
-			foreach($data['members'] as $member) {
-				if($member['rank'] <= $_POST['gr']) {
-					array_push($chararray, $member['character']['name']);
-				}
-			}
-				
-			foreach($chararray as $char) {
-				require_once('func.php');
-				import($char);
-				echo '<meta http-equiv="refresh" content="0;url=http://guild.artifactpower.info/" />';
-			}
-			
-		}
-	}
+	include('guildrankimport.php');
 }
 	
 if(isset($_POST['c'])) {
@@ -238,70 +70,7 @@ if(isset($_POST['c'])) {
 }
 	
 if(isset($_GET['i'])) {
-	if($count_rows['users'] == '' || $count_rows['users'] == '0') {
-		echo '<p id="cent">Welcome! You have no characters listed yet.</p>';
-	}
-	
-	$guild = $_SESSION['g'];
-	if(strpos($guild, ' ') !== false) {
-		$guild = str_replace(' ', '%20', $guild);
-	}
-	$server = $_SESSION['s'];
-	if(strpos($server, ' ') !== false) {
-		$server = str_replace(' ', '-', $server);
-	}
-	
-	echo '<p id="cent">Select characters you would like to import:</p>
-	<form action="" method="POST" style="text-align: center;">
-	<select multiple name="c[]" style="width: 250px; height: 250px;">';
-	$url = 'https://' .$_SESSION['r']. '.api.battle.net/wow/guild/' .$server. '/' .$guild. '?fields=members&locale=en_GB&apikey=KEY_HERE';
-
-	$data = @file_get_contents($url, false, stream_context_create($arrContextOptions));
-	if($data != '') {
-		$data = json_decode($data, true);
-		$chararray = array();
-				
-		for($rank = '0'; $rank <= '9'; $rank++) {
-			${'' .$rank. 'array'} = array();
-			foreach($data['members'] as $members) {
-				if($members['rank'] == $rank) {
-					if($members['character']['level'] == '110') {
-						array_push(${'' .$rank. 'array'}, $members['character']['name']);
-					}
-				}
-			}
-		
-			sort(${'' .$rank. 'array'});
-			
-			echo '<optgroup label="Guildrank ' .($rank+1). '">';
-		
-			foreach(${'' .$rank. 'array'} as $char) {
-				echo '<option value="' .$char. '">' .$char. '</option>';
-			}
-			
-			echo '</optgroup>';
-			
-		}
-	}
-	
-	echo '</select><br />
-	<button type="submit">Import</button>
-	</form>
-	<hr>
-	<form action="" method="POST">
-	<p id="cent">Import characters based on guild rank (1 = guild leader only, 10 = whole guild - <span style="color: red;">WARNING:</span> 10 takes ages on big guilds, use with caution!)
-	<select name="gr">';
-	for($i = '1'; $i <= '10'; $i++) {
-		echo '<option value="' .($i-1). '">' .$i. ' rank(s)</option>';
-	}
-	echo '</select><button type="submit">Import</button></p>
-	</form>
-	<hr>
-	<form action="" method="POST">
-	<p id="cent">Import specific characters only (separated by commas, case-sensitive)
-		<input type="text" name="c" placeholder="a,b,c,d" />
-	<button type="submit">Import</button>
-	</form>';
+	include('setup.php');
 }
 	
 if(!isset($_GET['i']) || isset($_GET['sl'])) {			
@@ -414,36 +183,16 @@ if(!isset($_GET['i']) || isset($_GET['sl'])) {
 			
 			if(!empty($compare_old)) {
 				
-				if(($data['ap']-$compare_old['ap']) != '0') {
-					$ap_incr = '<span style="color: grey;">(+' .(round($data['ap']/$compare_old['ap']-1, 3)*100). '%)</span>';
-				}
-				
-				if(($data['sum']-$compare_old['sum']) != '0') {
-					$sum_old = '<span style="color: grey;">(+' .($data['sum']-$compare_old['sum']). ')</span>';
-				}
-				
-				if(($data['ilvlavg']-$compare_old['ilvlavg']) != '0') {
-					$ilvlavg_old = '<span style="color: grey;">(+' .($data['ilvlavg']-$compare_old['ilvlavg']). ')</span>';
-				}
-								
-				if(($data['ilvlbags']-$compare_old['ilvlbags']) != '0') {
-					$bags_old = '<span style="color: grey;">(+' .($data['ilvlbags']-$compare_old['ilvlbags']). ')</span>';
-				}
-				
-				if(($data['alvl']-$compare_old['alvl']) != '0') {
-					$alvl_old = '<span style="color: grey;">(+' .($data['alvl']-$compare_old['alvl']). ')</span>';
-				}
+				if(($data['ap']-$compare_old['ap']) != '0') { $ap_incr = '<span style="color: grey;">(+' .(round($data['ap']/$compare_old['ap']-1, 3)*100). '%)</span>'; }
+				if(($data['sum']-$compare_old['sum']) != '0') { $sum_old = '<span style="color: grey;">(+' .($data['sum']-$compare_old['sum']). ')</span>'; }
+				if(($data['ilvlavg']-$compare_old['ilvlavg']) != '0') { $ilvlavg_old = '<span style="color: grey;">(+' .($data['ilvlavg']-$compare_old['ilvlavg']). ')</span>'; }
+				if(($data['ilvlbags']-$compare_old['ilvlbags']) != '0') { $bags_old = '<span style="color: grey;">(+' .($data['ilvlbags']-$compare_old['ilvlbags']). ')</span>'; }
+				if(($data['alvl']-$compare_old['alvl']) != '0') { $alvl_old = '<span style="color: grey;">(+' .($data['alvl']-$compare_old['alvl']). ')</span>'; }
 			}
 			
-			if(time('now')-$data['lupd'] > '86400') {
-				$update = 'style="color: red; font-size: 10px;"';
-			}
-			elseif(time('now')-$data['lupd'] < '86400' && time('now')-$data['lupd'] >= '43200') {
-				$update = 'style="color: orange; font-size: 10px;"';
-			}
-			elseif(time('now')-$data['lupd'] < '43200') {
-				$update = 'style="color: green; font-size: 10px;"';
-			}
+			if(time('now')-$data['lupd'] > '86400') { $update = 'style="color: red; font-size: 10px;"'; }
+			elseif(time('now')-$data['lupd'] < '86400' && time('now')-$data['lupd'] >= '43200') { $update = 'style="color: orange; font-size: 10px;"'; }
+			elseif(time('now')-$data['lupd'] < '43200') { $update = 'style="color: green; font-size: 10px;"'; }
 			
 			
 			$weapon_id = mysqli_fetch_array(mysqli_query($stream, "SELECT `w` FROM `weapons` WHERE `s` = '" .$data['s']. "' AND `id` = '" .$data['c']. "'"));
