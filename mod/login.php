@@ -3,8 +3,16 @@
 include('dbcon.php');
 
 echo '<h1 id="cent"><a href="http://guild.artifactpower.info/"><u>A</u>dvanced <u>G</u>uild <u>S</u>tatistics</a></h1>';
+
 $count = mysqli_num_rows(mysqli_query($stream, "SELECT `id` FROM `guilds`"));
-echo '<p style="color: orange; text-align: center;">' .$count. ' guilds registered!</p>
+$eu = mysqli_num_rows(mysqli_query($stream, "SELECT `id` FROM `guilds` WHERE `r` = 'EU'"));
+$us = mysqli_num_rows(mysql_query($stream, "SELECT `id` FROM `guilds` WHERE `r` = 'US'"));
+
+$eu = round($eu/$count*100, 2);
+$us = round(100-$eu, 2);
+
+
+echo '<p style="color: orange; text-align: center;">' .$count. ' guilds registered! ' .$eu. '% EU / ' .$us. '% US</p>
 <form id="cent" action="" method="POST">
 <select name="g" id="cent">
 <option selected disabled>select your guild</option>';
@@ -44,8 +52,7 @@ echo '</select><br />
 <br />
 <button type="submit" id="cent">Login</button>
 </form>
-<p id="cent"><b><a href="http://check.artifactpower.info/?c=Xepheris&r=EU&s=Blackmoore">DEMO with reduced functions</a><br />
-<a href="http://guild.artifactpower.info/?sl=8cb923fe2227b58015520ea2aee020bb">GUILD DEMO (guest view)</a></b>
+<p id="cent"><b><a href="http://guild.artifactpower.info/?sl=8cb923fe2227b58015520ea2aee020bb">GUILD DEMO (guest view)</a></b>
 <p id="cent">
 <b>What is included?</b><br />
 • missing enchant/gem filter<br />
@@ -67,7 +74,7 @@ echo '</select><br />
 </select>
 <button type="submit">Insert</button>
 </form>
-<p id="cent">Your guild has been wrongfully claimed? Bugs? Suggestions?<br />Write me a mail to <a href="mailto:xepheris.dh.tank@gmail.com">xepheris.dh.tank@gmail.com</a>!<br />
+<p id="cent">Guilds that are inactive for more than 14 days will be purged.<br /><br />Your guild has been wrongfully claimed? Bugs? Suggestions?<br />Write me a mail to <a href="mailto:xepheris.dh.tank@gmail.com">xepheris.dh.tank@gmail.com</a>!<br />
 <a href="https://github.com/xepheris/World-of-Warcraft---Legion-Advanced-Guild-Statistics" style="font-size: 12px;">source code</a></p>';
 
 ?>

@@ -10,9 +10,16 @@ echo '<!DOCTYPE html>
 <meta name="description" content="Advanced Guild Statistics including Artifact Power, Level, Mythics done, Highest M+, Equip comparison including tooltips, relative colorization and many more functions!" />
 <meta name="keywords" lang="en" content="advanced guild statistics, guild, statistics, artifact power, artifact level, equip, wow, legion, addon, expansion, tracking, loot, council, loot council" />
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-<script type="text/javascript" src="js/jquery-1.10.1.min.js"></script>
-<title>Advanced Guild Statistics</title>
-</head>
+<script type="text/javascript" src="js/jquery-1.10.1.min.js"></script>';
+
+if(isset($_SESSION['g'])) {
+	echo '<title>' .$_SESSION['g']. ' - AGS</title>';
+}
+elseif(!isset($_SESSION['g'])) {
+	echo '<title>Advanced Guild Statistics</title>';
+}
+
+echo '</head>
 <body>
 <div id="content">';
 
