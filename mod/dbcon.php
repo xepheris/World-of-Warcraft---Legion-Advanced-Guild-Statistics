@@ -4,7 +4,7 @@
 
 $server = '';
 $user = '';
-$pass = '!';
+$pass = '';
 $dbname = '';
 
 $stream = mysqli_connect($server, $user, $pass);

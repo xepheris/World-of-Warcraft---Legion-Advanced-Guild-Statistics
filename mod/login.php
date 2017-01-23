@@ -56,6 +56,7 @@ echo '</select><br />
 <p id="cent">
 <b>What is included?</b><br />
 • missing enchant/gem filter<br />
+• x-realm guilds are now supported<br />
 • guest access (login without password or via shared link as admin)<br />
 • relative colorization of many columns<br />
 • individual raid progress<br />

@@ -1,17 +1,21 @@
-<script defer src="http://wow.zamimg.com/widgets/power.js"></script>
-<script>
-var wowhead_tooltips = {
-	"hide": {
-		"droppedby": true,
-		"dropchance": true,
-		"sellprice": true,
-		"maxstack": true,
-		"iconizelinks": true		
-	}
-}
-</script>
-
 <?php
+
+if($_SESSION['showequip'] == '1') {
+	?>
+	<script defer src="http://wow.zamimg.com/widgets/power.js"></script>
+	<script>
+	var wowhead_tooltips = {
+		"hide": {
+			"droppedby": true,
+			"dropchance": true,
+			"sellprice": true,
+			"maxstack": true,
+			"iconizelinks": true		
+		}
+	}
+	</script>
+	<?php
+}
 
 if(isset($_GET['r']) && is_numeric($_GET['r'])) {
 	include('remover.php');
@@ -197,8 +201,12 @@ if(!isset($_GET['i']) || isset($_GET['sl'])) {
 			
 			$weapon_id = mysqli_fetch_array(mysqli_query($stream, "SELECT `w` FROM `weapons` WHERE `s` = '" .$data['s']. "' AND `id` = '" .$data['c']. "'"));
 			$class = mysqli_fetch_array(mysqli_query($stream, "SELECT `class`, `color` FROM `classes` WHERE `id` = '" .$data['c']. "'"));
+			
+			if($data['r'] == '') {
+				$data['r'] = $_SESSION['s'];
+			}
 			echo '<div class="tr" ' .$style. '>
-			<div class="tc"><a href="http://' .$_SESSION['r']. '.battle.net/wow/en/character/' .$server. '/' .$data['ch']. '/simple" title="Logged out: ' .round(((time('now')-$data['llog'])/3600), 2). ' hrs. ago – Last update: ' .round(((time('now')-$data['lupd'])/3600), 2). ' hrs. ago">' .$data['ch']. '</a> <span ' .$update. '>upd: ' .round(((time('now')-$data['lupd'])/3600), 2). ' hrs. ago <a href="http://www.wowprogress.com/character/' .$_SESSION['r']. '/' .$server. '/' .$data['ch']. '"><img src="img/wpr.ico" alt="404" /></a> <a href="http://check.artifactpower.info/?r=' .$_SESSION['r']. '&s=' .$server. '&c=' .$data['ch']. '"><img src="img/aaa.png" alt="404" /></a></div>
+			<div class="tc"><a href="http://' .$_SESSION['r']. '.battle.net/wow/en/character/' .$data['r']. '/' .$data['ch']. '/simple" title="Logged out: ' .round(((time('now')-$data['llog'])/3600), 2). ' hrs. ago – Last update: ' .round(((time('now')-$data['lupd'])/3600), 2). ' hrs. ago">' .$data['ch']. '</a> <span ' .$update. '>upd: ' .round(((time('now')-$data['lupd'])/3600), 2). ' hrs. ago <a href="http://www.wowprogress.com/character/' .$_SESSION['r']. '/' .$data['r']. '/' .$data['ch']. '"><img src="img/wpr.ico" alt="404" /></a> <a href="http://check.artifactpower.info/?r=' .$_SESSION['r']. '&s=' .$data['r']. '&c=' .$data['ch']. '"><img src="img/aaa.png" alt="404" /></a></div>
 			<div class="tc" style="background:' .$class['color']. ';"><a href="?fc=' .$data['c']. '">' .$class['class']. '</a></div>
 			<div class="tc"><a href="?fs=' .$weapon_id['w']. '">' .$data['s']. '</a></div>';
 			

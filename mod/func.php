@@ -1,6 +1,10 @@
 <?php
 
 function import($char) {
+	
+	if(isset($specc)) {
+		unset($specc);
+	}
 		
 	global $stream;
 	
@@ -8,25 +12,44 @@ function import($char) {
 	$server = $_SESSION['s'];
 	$guild = $_SESSION['g'];
 	
-	$jaedenar = array('Innos', 'Aya', 'Altra', 'Gnomonk');
-	$dunemaul = array('Naija', 'Ironblood', 'Stormbrew', 'Birdofwar', 'Wrewdink', 'Carnels');
-	
-	if(in_array($char, $jaedenar)) {
-		$server = 'Jaedenar';
+	// REMOVE SPACES IN SERVER AND GUILD NAME TO PREVENT BUGS IN URL
+	if(strpos($server, ' ') !== false) {
+		$server = str_replace(' ', '-', $server);
 	}
-	if(in_array($char, $dunemaul)) {
-		$server = 'Dunemaul';
+	if(strpos($guild, ' ') !== false) {
+		$guild = str_replace(' ', '%20', $guild);
 	}
-	
+	// REMOVE SLASHES IN SERVER NAME TO ALLOW ACTUAL SEARCH AGAIN
+	$server = stripslashes($server);
+		
 	// CHECK FOR LAST UPDATE
 	$old = mysqli_fetch_array(mysqli_query($stream, "SELECT `lupd` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "' ORDER BY `id` DESC LIMIT 1"));
 	$timediff = time('now')-$old['lupd'];
 		
 	if($timediff >= '300') {
-					
-		// ENABLE SSL
-		$arrContextOptions=array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false, ),);  
 		
+		$url = 'https://' .$_SESSION['r']. '.api.battle.net/wow/guild/' .$server. '/' .$guild. '?fields=members&locale=en_GB&apikey=KEY_HERE';
+
+		// ENABLE SSL
+		$arrContextOptions = array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false, ),);  
+		$data = @file_get_contents($url, false, stream_context_create($arrContextOptions));
+	
+		if($data != '') {		
+			$data = json_decode($data, true);
+		
+			for($i = '0'; $i <= '1000'; $i++) {
+				if($memberserver == '') {
+					if($data['members'][$i]['character']['name'] == $char) {
+						$memberserver = $data['members'][$i]['character']['realm'];
+					}					
+				}
+			}
+		}
+	
+		if($memberserver != $server) {
+			$server = $memberserver;
+		}
+			
 		// REMOVE SPACES IN SERVER AND GUILD NAME TO PREVENT BUGS IN URL
 		if(strpos($server, ' ') !== false) {
 			$server = str_replace(' ', '-', $server);
@@ -45,6 +68,7 @@ function import($char) {
 			$data = json_decode($data, true);
 			
 			if($data['guild']['name'] == $_SESSION['g']) {
+				
 				// 110 CHECK
 				if($data['level'] == '110') {
 					
@@ -69,11 +93,6 @@ function import($char) {
 						foreach($data['items']['' .$item. '']['bonusLists'] as $bonus) {
 							if(!isset(${'' .$item. '_bonus'})) {
 								${'' .$item. '_bonus'} = $bonus;
-								
-								// PRYDAZ WORKAROUND - BLIZZARD API DOESN'T RETURN IT HAVING A SOCKET
-								if(${'' .$item. '_id'} == '132444') {
-									${'' .$item. '_bonus'}.= ':1808';
-								}
 							}
 							elseif(isset(${'' .$item. '_bonus'})) {
 								${'' .$item. '_bonus'}.= ':' .$bonus. '';
@@ -87,21 +106,15 @@ function import($char) {
 					for($i = '0'; $i <= '4'; $i++) {
 						if($specc == '') {
 							if($data['talents'][$i]['selected'] == '1') {
-								$specc = $data['talents'][$i]['spec']['name'];
-								if($specc == '') {
-									for($k = '0'; $k <= '7'; $k++) {
-										if(isset($data['talents'][$i]['talents'][$k]['spec']['name'])) {
-											$specc = $data['talents'][$i]['talents'][$k]['spec']['name'];
-										}
+								for($k = '0'; $k <= '7'; $k++) {					
+									if(isset($data['talents'][$i]['talents'][$k]['spec']['name'])) {
+										$specc = $data['talents'][$i]['talents'][$k]['spec']['name'];
 									}
 								}
 							}
 						}
-					}
-					if($specc == '') {
-						$specc = $data['talents'][$i]['spec']['name'];
-					}
-				
+					}	
+					
 					$weapon = mysqli_fetch_array(mysqli_query($stream, "SELECT `w` FROM `weapons` WHERE `s` = '" .$specc. "' AND `id` = '" .$class. "'"));
 					
 					if($data['items']['mainHand']['id'] == $weapon['w']) {
@@ -259,6 +272,7 @@ function import($char) {
 					// CREATE INDIVIDUAL TABLE					
 					$table = mysqli_query($stream, "CREATE TABLE IF NOT EXISTS `" .$_SESSION['t']. "` (`id` int(4) NOT NULL AUTO_INCREMENT,
 					`ch` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+					`r` VARCHAR(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 					`llog` int(10) NOT NULL,
 					`lupd` int(10) NOT NULL,
 					`c` tinyint(1) NOT NULL,
@@ -379,6 +393,7 @@ function import($char) {
 					// CREATE ARCHIVE TABLE
 					$archive = mysqli_query($stream, "CREATE TABLE IF NOT EXISTS `" .$_SESSION['t']. "_archive` (`id` int(4) NOT NULL AUTO_INCREMENT,
 					`ch` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+					`r` VARCHAR(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 					`llog` int(10) NOT NULL,
 					`lupd` int(10) NOT NULL,
 					`c` tinyint(1) NOT NULL,
@@ -497,9 +512,9 @@ function import($char) {
 					}
 										
 					// SELECT, IF EXISTING, PREVIOUS DATA AND MOVE
-					$current_db_entry = mysqli_fetch_array(mysqli_query($stream, "SELECT `id`, `llog`, `ap`, `s`, `sum` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "'"));
+					$current_db_entry = mysqli_fetch_array(mysqli_query($stream, "SELECT `id`, `llog`, `ap` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$char. "'"));
 					
-					$insert_sql = "INSERT INTO `" .$_SESSION['t']. "` (`ch`, `llog`, `lupd`, `c`, `s`, `he_id`, `he_ilvl`, `he_g`, `he_e`, `he_b`, `n_id`, `n_ilvl`, `n_g`, `n_e`, `n_b`, `s_id`, `s_ilvl`, `s_g`, `s_e`, `s_b`, `b_id`, `b_ilvl`, `b_g`, `b_e`, `b_b`, `c_id`, `c_ilvl`, `c_g`, `c_e`, `c_b`, `wr_id`, `wr_ilvl`, `wr_g`, `wr_e`, `wr_b`, `ha_id`, `ha_ilvl`, `ha_g`, `ha_e`, `ha_b`, `wa_id`, `wa_ilvl`, `wa_g`, `wa_e`, `wa_b`, `l_id`, `l_ilvl`, `l_g`, `l_e`, `l_b`, `f_id`, `f_ilvl`, `f_g`, `f_e`, `f_b`, `f1_id`, `f1_ilvl`, `f1_g`, `f1_e`, `f1_b`, `f2_id`, `f2_ilvl`, `f2_g`, `f2_e`, `f2_b`, `t1_id`,`t1_ilvl`, `t1_g`, `t1_e`, `t1_b`,`t2_id`, `t2_ilvl`, `t2_g`, `t2_e`,`t2_b`, `mh_ilvl`,`mh_b`, `mh_r1`,`mh_r1b`, `mh_r2`,`mh_r2b`, `mh_r3`,`mh_r3b`, `oh_ilvl`,`oh_bonus`, `oh_r1`,`oh_r1b`, `oh_r2`,`oh_r2b`, `oh_r3`,`oh_r3b`, `ilvlavg`, `ilvlbags`, `eoa`, `dht`, `nel`,`hov`, `vh`, `vow`, `brh`, `mos`, `arc`, `cos`, `sum`, `mplus`, `en`, `tov`, `nh`, `alvl`, `ap`, `ak`) VALUES ('" .$char. "', '" .$llog. "', '" .time('now'). "', '" .$class. "', '" .$specc. "', '" .$head_id. "', '" .$head_ilvl. "', '" .$head_gem0. "', '" .$head_ench. "', '" .$head_bonus. "', '" .$neck_id. "', '" .$neck_ilvl. "', '" .$neck_gem0. "', '" .$neck_ench. "', '" .$neck_bonus. "', '" .$shoulder_id. "', '" .$shoulder_ilvl. "', '" .$shoulder_gem0. "', '" .$shoulder_ench. "', '" .$shoulder_bonus. "', '" .$back_id. "', '" .$back_ilvl. "', '" .$back_gem0. "', '" .$back_ench. "', '" .$back_bonus. "', '" .$chest_id. "', '" .$chest_ilvl. "', '" .$chest_gem0. "', '" .$chest_ench. "', '" .$chest_bonus. "', '" .$wrist_id. "', '" .$wrist_ilvl. "', '" .$wrist_gem0. "', '" .$wrist_ench. "', '" .$wrist_bonus. "', '" .$hands_id. "', '" .$hands_ilvl. "', '" .$hands_gem0. "', '" .$hands_ench. "', '" .$hands_bonus. "', '" .$waist_id. "', '" .$waist_ilvl. "', '" .$waist_gem0. "', '" .$waist_ench. "', '" .$waist_bonus. "', '" .$legs_id. "', '" .$legs_ilvl. "', '" .$legs_gem0. "', '" .$legs_ench. "', '" .$legs_bonus. "', '" .$feet_id. "', '" .$feet_ilvl. "', '" .$feet_gem0. "', '" .$feet_ench. "', '" .$feet_bonus. "', '" .$finger1_id. "', '" .$finger1_ilvl. "', '" .$finger1_gem0. "', '" .$finger1_ench. "', '" .$finger1_bonus. "', '" .$finger2_id. "', '" .$finger2_ilvl. "', '" .$finger2_gem0. "', '" .$finger2_ench. "', '" .$finger2_bonus. "', '" .$trinket1_id. "', '" .$trinket1_ilvl. "', '" .$trinket1_gem0. "', '" .$trinket1_ench. "', '" .$trinket1_bonus. "', '" .$trinket2_id. "', '" .$trinket2_ilvl. "', '" .$trinket2_gem0. "', '" .$trinket2_ench. "', '" .$trinket2_bonus. "', '" .$mhilvl. "', '" .$mh_bonus. "', '" .$mhrelic0. "', '" .$mhbonusrelic0. "', '" .$mhrelic1. "', '" .$mhbonusrelic1. "', '" .$mhrelic2. "', '" .$mhbonusrelic2. "', '" .$ohilvl. "', '" .$oh_bonus. "', '" .$ohrelic0. "', '" .$ohbonusrelic0. "', '" .$ohrelic1. "', '" .$ohbonusrelic1. "', '" .$ohrelic2. "', '" .$ohbonusrelic2. "', '" .$ilvlaverage. "', '" .$ilvlaveragebags. "', '" .$eoa. "', '" .$dht. "', '" .$nel. "', '" .$hov. "', '" .$vh. "', '" .$vow. "', '" .$brh. "', '" .$mos. "', '" .$arc. "', '" .$cos. "', '" .$mythicsum. "', '" .$mplus. "', '" .$en. "', '" .$tov. "' , '" .$nh. "', '" .$alevel. "', '" .$totalgained. "', '" .$aknowledge. "')";
+					$insert_sql = "INSERT INTO `" .$_SESSION['t']. "` (`ch`, `r`, `llog`, `lupd`, `c`, `s`, `he_id`, `he_ilvl`, `he_g`, `he_e`, `he_b`, `n_id`, `n_ilvl`, `n_g`, `n_e`, `n_b`, `s_id`, `s_ilvl`, `s_g`, `s_e`, `s_b`, `b_id`, `b_ilvl`, `b_g`, `b_e`, `b_b`, `c_id`, `c_ilvl`, `c_g`, `c_e`, `c_b`, `wr_id`, `wr_ilvl`, `wr_g`, `wr_e`, `wr_b`, `ha_id`, `ha_ilvl`, `ha_g`, `ha_e`, `ha_b`, `wa_id`, `wa_ilvl`, `wa_g`, `wa_e`, `wa_b`, `l_id`, `l_ilvl`, `l_g`, `l_e`, `l_b`, `f_id`, `f_ilvl`, `f_g`, `f_e`, `f_b`, `f1_id`, `f1_ilvl`, `f1_g`, `f1_e`, `f1_b`, `f2_id`, `f2_ilvl`, `f2_g`, `f2_e`, `f2_b`, `t1_id`,`t1_ilvl`, `t1_g`, `t1_e`, `t1_b`,`t2_id`, `t2_ilvl`, `t2_g`, `t2_e`,`t2_b`, `mh_ilvl`,`mh_b`, `mh_r1`,`mh_r1b`, `mh_r2`,`mh_r2b`, `mh_r3`,`mh_r3b`, `oh_ilvl`,`oh_bonus`, `oh_r1`,`oh_r1b`, `oh_r2`,`oh_r2b`, `oh_r3`,`oh_r3b`, `ilvlavg`, `ilvlbags`, `eoa`, `dht`, `nel`,`hov`, `vh`, `vow`, `brh`, `mos`, `arc`, `cos`, `sum`, `mplus`, `en`, `tov`, `nh`, `alvl`, `ap`, `ak`) VALUES ('" .$char. "', '" .$server. "', '" .$llog. "', '" .time('now'). "', '" .$class. "', '" .$specc. "', '" .$head_id. "', '" .$head_ilvl. "', '" .$head_gem0. "', '" .$head_ench. "', '" .$head_bonus. "', '" .$neck_id. "', '" .$neck_ilvl. "', '" .$neck_gem0. "', '" .$neck_ench. "', '" .$neck_bonus. "', '" .$shoulder_id. "', '" .$shoulder_ilvl. "', '" .$shoulder_gem0. "', '" .$shoulder_ench. "', '" .$shoulder_bonus. "', '" .$back_id. "', '" .$back_ilvl. "', '" .$back_gem0. "', '" .$back_ench. "', '" .$back_bonus. "', '" .$chest_id. "', '" .$chest_ilvl. "', '" .$chest_gem0. "', '" .$chest_ench. "', '" .$chest_bonus. "', '" .$wrist_id. "', '" .$wrist_ilvl. "', '" .$wrist_gem0. "', '" .$wrist_ench. "', '" .$wrist_bonus. "', '" .$hands_id. "', '" .$hands_ilvl. "', '" .$hands_gem0. "', '" .$hands_ench. "', '" .$hands_bonus. "', '" .$waist_id. "', '" .$waist_ilvl. "', '" .$waist_gem0. "', '" .$waist_ench. "', '" .$waist_bonus. "', '" .$legs_id. "', '" .$legs_ilvl. "', '" .$legs_gem0. "', '" .$legs_ench. "', '" .$legs_bonus. "', '" .$feet_id. "', '" .$feet_ilvl. "', '" .$feet_gem0. "', '" .$feet_ench. "', '" .$feet_bonus. "', '" .$finger1_id. "', '" .$finger1_ilvl. "', '" .$finger1_gem0. "', '" .$finger1_ench. "', '" .$finger1_bonus. "', '" .$finger2_id. "', '" .$finger2_ilvl. "', '" .$finger2_gem0. "', '" .$finger2_ench. "', '" .$finger2_bonus. "', '" .$trinket1_id. "', '" .$trinket1_ilvl. "', '" .$trinket1_gem0. "', '" .$trinket1_ench. "', '" .$trinket1_bonus. "', '" .$trinket2_id. "', '" .$trinket2_ilvl. "', '" .$trinket2_gem0. "', '" .$trinket2_ench. "', '" .$trinket2_bonus. "', '" .$mhilvl. "', '" .$mh_bonus. "', '" .$mhrelic0. "', '" .$mhbonusrelic0. "', '" .$mhrelic1. "', '" .$mhbonusrelic1. "', '" .$mhrelic2. "', '" .$mhbonusrelic2. "', '" .$ohilvl. "', '" .$oh_bonus. "', '" .$ohrelic0. "', '" .$ohbonusrelic0. "', '" .$ohrelic1. "', '" .$ohbonusrelic1. "', '" .$ohrelic2. "', '" .$ohbonusrelic2. "', '" .$ilvlaverage. "', '" .$ilvlaveragebags. "', '" .$eoa. "', '" .$dht. "', '" .$nel. "', '" .$hov. "', '" .$vh. "', '" .$vow. "', '" .$brh. "', '" .$mos. "', '" .$arc. "', '" .$cos. "', '" .$mythicsum. "', '" .$mplus. "', '" .$en. "', '" .$tov. "' , '" .$nh. "', '" .$alevel. "', '" .$totalgained. "', '" .$aknowledge. "')";
 										
 					if($current_db_entry['id'] != '') {
 						
@@ -525,7 +540,13 @@ function import($char) {
 						if(!$insert) {
 							echo '<p id="error">Sorry, could not insert character data at this time. Most likely the armory is unavailable – please retry!</p>';
 						}
-					}
+					}				
+					
+					/*
+					// ONLY ALLOW 25 LAST ENTRIES PER CHARACTER
+					$highest_id = mysqli_fetch_array(mysqli_query($stream, "SELECT `id` FROM `" .$_SESSION['t']. "` ORDER BY `id` DESC LIMIT 1"));
+					$delete = mysqli_query($stream, "DELETE FROM `" .$_SESSION['t']. "` WHERE `id` <= '" .($highest_id['id']-25). "'");
+					*/
 				}
 			}	
 		}

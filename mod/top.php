@@ -37,11 +37,10 @@ echo '<div id="core"><h1 id="cent"><a href="http://guild.artifactpower.info/"><u
 	<a href="http://' .$_SESSION['r']. '.battle.net/wow/en/guild/' .$_SESSION['s']. '/' .$_SESSION['g']. '/">' .$_SESSION['g']. '</a>
 	– <a href="http://www.wowprogress.com/guild/' .$_SESSION['r']. '/' .$_SESSION['s']. '/' .$_SESSION['g']. '">Wowprogress</a>
 	– <a href="https://www.warcraftlogs.com/search/?term=' .$_SESSION['g']. '">Warcraftlogs</a>
-	- TEMPORARY LINK: <a href="http://guild.artifactpower.info/img/nh/"><span title="credit goes to Oaken of <The Kremling Krew> of US-Mannoroth">Heroic Nighthold Guide1</span></a> | <a href="http://guild.artifactpower.info/img/nh/minimalistnh.png">Nighthold Guide2</span></a><br />
+	- TEMPORARY LINK: <a href="http://guild.artifactpower.info/img/nh/"><span title="credit goes to Oaken of <The Kremling Krew> of US-Mannoroth">Heroic Nighthold Guide</span></a><br />
 	' .$info. '</p>
-	<p id="cent">known issues: wowhead cannot properly calculate weapon itemlevel on tooltip
-	<br /><span style="color: orange;">ARMORY LEGENDARIES ARE NOW UP TO DATE - UPDATE YOUR GUILD TO CORRECT COLORIZATION OF ITEMS</span><br />to manually update - logout (character selection is enough; armory _should_ update instantly)</p>
-	<p id="cent" style="font-size: 20px;">
+	<p id="cent">currently no known issues
+	<br />to manually update - logout (character selection is enough; armory _should_ update instantly)<br /><br />
 	<img src="img/me.png" alt="404" /> = missing enchant
 	| <img src="img/mg.png" alt="404" /> = missing gem<br />
 	click on a column or class/role to sort | hover over Mythics number to see different amounts</p>

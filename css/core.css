@@ -88,8 +88,6 @@ body {
 	text-align: center;
 }
 
-
-
 a:visited, a:link {
 	color: #F4F4F4;
 	text-decoration: none;
@@ -107,3 +105,23 @@ a:visited, a:link {
 #equip {
 	display: none;
 }
+
+@media (max-width:2200px) {
+	.t {
+		font-size: 18px;
+	}
+}
+
+@media (max-width:1600px) {
+	.t {
+		font-size: 16px;
+	}
+}
+
+@media (max-width:1450px) {
+	.t {
+		font-size: 14px;
+	}
+	
+}
+
