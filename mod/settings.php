@@ -85,13 +85,13 @@ if(isset($_POST['ap_low']) && isset($_POST['ap_high'])) {
 if(!isset($_POST['g_low']) && !isset($_POST['g_mid']) && !isset($_POST['g_high'])) {
 	$g_thresholds = mysqli_fetch_array(mysqli_query($stream, "SELECT `g_low`, `g_high` FROM `guilds` WHERE `id` = '" .$_SESSION['t']. "'"));
 	echo '
-	<p style="text-align: center;">The following settings will change your guilds item colorization depending on the individual characters itemlevel<br/>Standard values are: gear bad: 0.6 | gear good: 0.8 | ap low: 0.45 | ap high: 0.65</p>
+	<p style="text-align: center;">The following settings will change your guilds item colorization depending on the individual characters itemlevel<br/>Standard values are: gear bad: 0.5 | gear good: 0.75 | ap low: 0.45 | ap high: 0.65</p>
 	<form action="?sett" method="POST">
 	<div class="t">
 	<div class="tr" style="text-align: center;">gear <u>worse than</u> (itemlevel-800)* <input type="text" maxlength="4" value="' .$g_thresholds['g_low']. '" name="g_low" style="width: 30px;" required /> of your highest will be considered <span style="color: red;">bad</span></div>
 	<div class="tr" style="text-align: center;">gear between these two values will appear <span style="color: orange;">orange</span></div>
 	<div class="tr" style="text-align: center;">gear <u>higher equal than</u> (itemlevel-800)* <input type="text" maxlength="4" value="' .$g_thresholds['g_high']. '" name="g_high" style="width: 30px;" required /> of your highest will be considered <span style="color: green;">good</span></div>
-	<div class="tr" style="text-align: center;"><br >EXAMPLE: the best items of your guild will be the legendaries (currently 910) We compare with 890, 870 and 840.<br /><span style="color: green;">(890-800)/(910-800) = 0.81 => green</span> | <span style="color: orange;">(870-800)/(910-800) = 0.63 => orange</span> | <span style="color: red;">(840-800)/(910-800) = 0.36 => red</span></div>
+	<div class="tr" style="text-align: center;"><br >EXAMPLE: the best items of your guild will be the legendaries (currently 940) We will compare 910, 870 and 840.<br /><span style="color: green;">(910-800)/(940-800) = 0.79 => green</span> | <span style="color: orange;">(870-800)/(940-800) = 0.5 => orange</span> | <span style="color: red;">(840-800)/(940-800) = 0.29 => red</span></div>
 	<div class="tr" style="text-align: center;"><button type="submit">Change Equipment thresholds</button></center></div>
 	</div>
 	</form>';

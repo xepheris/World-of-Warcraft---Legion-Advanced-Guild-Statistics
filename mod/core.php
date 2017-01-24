@@ -169,11 +169,6 @@ if(!isset($_GET['i']) || isset($_GET['sl'])) {
 			$server = str_replace(' ', '-', $server);
 		}
 		
-		$rowarray = array('he', 'n', 's', 'b', 'c', 'wr', 'ha', 'wa', 'l', 'f', 'f1', 'f2', 't1', 't2');
-		foreach($rowarray as $max) {
-			${'' .$max. '_color'} = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`" .$max. "_ilvl`) AS `" .$max. "_max` FROM `" .$_SESSION['t']. "`"));
-		}
-		
 		$apcap = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`ap`) AS `apcap` FROM `" .$_SESSION['t']. "`"));
 		$alvlcap = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`alvl`) AS `alvlcap` FROM `" .$_SESSION['t']. "`"));
 		$eqcap = mysqli_fetch_array(mysqli_query($stream, "SELECT MAX(`ilvlavg`) AS `avgcap` FROM `" .$_SESSION['t']. "`"));
@@ -187,6 +182,8 @@ if(!isset($_GET['i']) || isset($_GET['sl'])) {
 			else {
 				$style = '';
 			}
+			
+			$individual_max = mysqli_fetch_array(mysqli_query($stream, "SELECT GREATEST(MAX(`he_ilvl`), MAX(`n_ilvl`), MAX(`s_ilvl`), MAX(`b_ilvl`), MAX(`c_ilvl`), MAX(`wr_ilvl`), MAX(`ha_ilvl`), MAX(`wa_ilvl`), MAX(`l_ilvl`), MAX(`f_ilvl`), MAX(`f1_ilvl`), MAX(`f2_ilvl`), MAX(`t1_ilvl`), MAX(`t2_ilvl`)) AS `max` FROM `" .$_SESSION['t']. "` WHERE `ch` = '" .$data['ch']. "'"));
 
 			$compare_old = mysqli_fetch_array(mysqli_query($stream, "SELECT `ap`, `sum`, `ilvlavg`, `ilvlbags`, `alvl` FROM `" .$_SESSION['t']. "_archive` WHERE `ch` = '" .$data['ch']. "' ORDER BY `lupd` DESC LIMIT 1"));
 			
@@ -253,10 +250,10 @@ if(!isset($_GET['i']) || isset($_GET['sl'])) {
 			$rowarray = array('he', 'n', 's', 'b', 'c', 'wr', 'ha', 'wa', 'l', 'f', 'f1', 'f2', 't1', 't2');
 			foreach($rowarray as $row) {
 							
-				$qualitycheck = round(($data['' .$row. '_ilvl']-800)/(${'' .$row. '_color'}['' .$row. '_max']-800), 2);			
-				if($qualitycheck >= '0.8') { $quality = 'style="color: green;"'; }
-				if($qualitycheck >= '0.6' && $qualitycheck < '0.8') { $quality = 'style="color: orange;"'; }
-				if($qualitycheck < '0.6') { $quality = 'style="color: red;"'; }
+				$qualitycheck = round(($data['' .$row. '_ilvl']-800)/($individual_max['max']-800), 2);			
+				if($qualitycheck >= '0.75') { $quality = 'style="color: green;"'; }
+				if($qualitycheck >= '0.5' && $qualitycheck < '0.75') { $quality = 'style="color: orange;"'; }
+				if($qualitycheck < '0.5') { $quality = 'style="color: red;"'; }
 				
 							
 				if(!isset($_SESSION['showhide']) || $_SESSION['showhide'] == '0') {

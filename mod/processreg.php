@@ -52,8 +52,8 @@ if($_POST['r'] == 'EU' || $_POST['r'] == 'US') {
 				'" .$pw. "',
 				'0.45',
 				'0.65',
-				'0.6',
-				'0.8',
+				'0.5',
+				'0.75',
 				'" .$sl. "');");
 				echo '<h2 id="cent" style="color: green;">Guild inserted, you may login now!</h2>';
 			}
