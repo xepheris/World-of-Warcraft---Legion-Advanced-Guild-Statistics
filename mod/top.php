@@ -9,17 +9,17 @@ if($count_rows['users'] != '') {
 }
 
 if((!isset($_SESSION['showequip']) || $_SESSION['showequip'] == '0') && $count_rows['users'] != '')  {
-	$equip = '| <a href="?showequip=1">SHOW EQUIP</a>';
+	$equip = '| <a href="?showequip=1" style="color: orange;">SHOW EQUIP</a>';
 }
 elseif($_SESSION['showequip'] == '1') {
-	$equip = '| <a href="?showequip=0">HIDE EQUIP</a>';
+	$equip = '| <a href="?showequip=0" style="color: orange;">HIDE EQUIP</a>';
 }
 	
 if((!isset($_SESSION['showhide']) || $_SESSION['showhide'] == '0') && $_SESSION['showequip'] == '1') {
-	$showhide = '| <a href="?sh=1">HIDE CORRECT GEMS & ENCHANTS TO HIGHLIGHT MISSING</a>';
+	$showhide = '| <a href="?sh=1" style="color: orange;">HIDE CORRECT GEMS & ENCHANTS TO HIGHLIGHT MISSING</a>';
 }
 elseif($_SESSION['showhide'] == '1' && $_SESSION['showequip'] == '1') {
-	$showhide = '| <a href="?sh=0">SHOW ALL ENCHANTS & GEMS</a>';
+	$showhide = '| <a href="?sh=0" style="color: orange;">SHOW ALL ENCHANTS & GEMS</a>';
 }
 
 if(!isset($_SESSION['guest'])) {
@@ -27,6 +27,7 @@ if(!isset($_SESSION['guest'])) {
 	$import = '<a href="?i">Import</a> | ';
 	$settings = ' | <a href="?sett">Settings</a>';
 	$share = ' | <span style="color: gold;" onClick="return confirm(\'Share this link to allow guests: http://guild.artifactpower.info/?sl=' .$sl['sl']. '\nThey can see everything you see but may not Delete or Import.\nAlternatively, tell them to login on the front page without a password.\')">Share</span>';
+	$mail = ' | <a href="?mail">Contact Form</a>';
 }
 elseif(isset($_SESSION['guest'])) {
 	$guest = '<br />Guest View';
@@ -45,6 +46,6 @@ echo '<div id="core"><h1 id="cent"><a href="http://guild.artifactpower.info/"><u
 	| <img src="img/mg.png" alt="404" /> = missing gem<br />
 	click on a column or class/role to sort | hover over Mythics number to see different amounts</p>
 	<hr>
-	<center>' .$import. ' ' .$updatetext. ' ' .$equip. ' ' .$showhide. '' .$settings. '' .$share. ' | <a href="?die">Logout</a></center>
+	<center>' .$import. ' ' .$updatetext. ' ' .$equip. ' ' .$showhide. '' .$settings. '' .$share. '' .$mail. ' | <a href="?die">Logout</a></center>
 	<hr>';
 ?>

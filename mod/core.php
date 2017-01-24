@@ -49,6 +49,11 @@ if(!empty($_SESSION['g'])) {
 if(isset($_POST['gr'])) {
 	include('guildrankimport.php');
 }
+
+if(isset($_GET['mail'])) {
+	include('mail.php');
+	die();
+}
 	
 if(isset($_POST['c'])) {
 	

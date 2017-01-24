@@ -61,12 +61,13 @@ echo '</select><br />
 • relative colorization of many columns<br />
 • individual raid progress<br />
 • graphs for all tracked characters aswell as the guild as whole<br />
+• ticket system<br />
 • sorting<br />
 <br />
 <b>Who needs this?</b><br />
 • any active raiding guild, especially on mythic<br />
 • loot councils
-<p id="cent"><b>Try it out below!</b></p>	
+<p id="cent"><b>You can try out by inserting the needed information just below!</b></p>	
 <form action="" method="POST" id="cent">
 <input type="text" name="gn" value="" placeholder="guild name case sensitive" />
 <input type="password" name="gpw" value="" placeholder="password" />
